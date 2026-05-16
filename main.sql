@@ -5,11 +5,9 @@ AUTHOR:      Anwar, Abdullah, Wajid
 DATE:        15-MAY-2026
 */
 
--- Create Database
 CREATE DATABASE IF NOT EXISTS HungerStationDB;
 USE HungerStationDB;
 
--- 1. Customer Table
 CREATE TABLE IF NOT EXISTS Customer (
     User_ID INT PRIMARY KEY AUTO_INCREMENT,
     Name VARCHAR(255) NOT NULL,
@@ -17,7 +15,6 @@ CREATE TABLE IF NOT EXISTS Customer (
     Phone VARCHAR(20)
 );
 
--- 1a. Customer_Address Table (For the multi-valued 'Address' attribute)
 CREATE TABLE IF NOT EXISTS Customer_Address (
     User_ID INT,
     Address VARCHAR(255),
@@ -25,7 +22,6 @@ CREATE TABLE IF NOT EXISTS Customer_Address (
     FOREIGN KEY (User_ID) REFERENCES Customer(User_ID) ON DELETE CASCADE
 );
 
--- 2. Restaurant Table
 CREATE TABLE IF NOT EXISTS Restaurant (
     Restaurant_ID INT PRIMARY KEY AUTO_INCREMENT,
     Name VARCHAR(255) NOT NULL,
@@ -33,7 +29,6 @@ CREATE TABLE IF NOT EXISTS Restaurant (
     Rating DECIMAL(3, 2)
 );
 
--- 2a. Restaurant_Location Table (For the multi-valued 'Location' attribute)
 CREATE TABLE IF NOT EXISTS Restaurant_Location (
     Restaurant_ID INT,
     Location VARCHAR(255),
@@ -41,7 +36,6 @@ CREATE TABLE IF NOT EXISTS Restaurant_Location (
     FOREIGN KEY (Restaurant_ID) REFERENCES Restaurant(Restaurant_ID) ON DELETE CASCADE
 );
 
--- 3. Driver Table
 CREATE TABLE IF NOT EXISTS Driver (
     Driver_ID INT PRIMARY KEY AUTO_INCREMENT,
     Name VARCHAR(255) NOT NULL,
@@ -50,7 +44,6 @@ CREATE TABLE IF NOT EXISTS Driver (
     Availability BOOLEAN DEFAULT TRUE
 );
 
--- 4. Menu Table (Weak Entity connected to Restaurant via "Offers")
 CREATE TABLE IF NOT EXISTS Menu (
     Item_ID INT PRIMARY KEY AUTO_INCREMENT,
     Restaurant_ID INT NOT NULL,
@@ -60,7 +53,6 @@ CREATE TABLE IF NOT EXISTS Menu (
     FOREIGN KEY (Restaurant_ID) REFERENCES Restaurant(Restaurant_ID) ON DELETE CASCADE
 );
 
--- 5. Review Table (Weak Entity connected to Customer and Restaurant)
 CREATE TABLE IF NOT EXISTS Review (
     Review_ID INT PRIMARY KEY AUTO_INCREMENT,
     User_ID INT,
@@ -71,7 +63,6 @@ CREATE TABLE IF NOT EXISTS Review (
     FOREIGN KEY (Restaurant_ID) REFERENCES Restaurant(Restaurant_ID) ON DELETE CASCADE
 );
 
--- 6. Order Table
 CREATE TABLE IF NOT EXISTS `Order` (
     Order_ID INT PRIMARY KEY AUTO_INCREMENT,
     User_ID INT NOT NULL,
@@ -83,7 +74,6 @@ CREATE TABLE IF NOT EXISTS `Order` (
     FOREIGN KEY (Driver_ID) REFERENCES Driver(Driver_ID) ON DELETE SET NULL
 );
 
--- 7. Payment Table (Connected to Order via "Generates")
 CREATE TABLE IF NOT EXISTS Payment (
     Payment_ID INT PRIMARY KEY AUTO_INCREMENT,
     Order_ID INT NOT NULL,
@@ -93,7 +83,6 @@ CREATE TABLE IF NOT EXISTS Payment (
     FOREIGN KEY (Order_ID) REFERENCES `Order`(Order_ID) ON DELETE CASCADE
 );
 
--- 8. Order_Menu Junction Table 
 CREATE TABLE IF NOT EXISTS Order_Menu (
     Order_ID INT,
     Item_ID INT,
@@ -125,53 +114,53 @@ TRUNCATE TABLE Customer;
 SET FOREIGN_KEY_CHECKS = 1;
 
 INSERT INTO Customer (Name, Email, Phone) VALUES
-('Alice Johnson', 'alice.j@email.com', '555-0101'),
-('Bob Smith', 'bob.smith@provider.net', '555-0102'),
-('Charlie Davis', 'charlie.d@webmail.com', '555-0103');
+('Alice Johnson', 'alice.j@gmail.com', '555-0101'),
+('Bob Smith', 'bob.smith@gmail.net', '555-0102'),
+('Charlie Davis', 'charlie.d@gmail.com', '555-0103');
 
 INSERT INTO Customer_Address (User_ID, Address) VALUES
-(1, '123 Maple St, Apt 4B'),
-(1, 'Work: 900 Business Pkwy'),
-(2, '456 Oak Lane'),
-(3, '789 Pine Rd');
+(1, 'Unit 12, 7894 Sadi Ibn Wahb St, As Salamah Dist'),
+(1, '4902 Amr Ibn Al Aas Street, Al Hamra Dist.'),
+(2, '3885 Al Bandariyyah Street, Al Falah Dist'),
+(3, '6687 Al Adel Street, As Sukhayrat Dist');
 
 INSERT INTO Restaurant (Name, Food_Type, Rating) VALUES
-('Burger Galaxy', 'Fast Food', 4.5),
-('Sushi Zen', 'Japanese', 4.8),
-('Pasta Palace', 'Italian', 4.2);
+('Al Baik', 'Fast Food', 4.5),
+('Sushi Den', 'Japanese', 4.8),
+('Starbucks', 'Fast Food', 4.2);
 
 INSERT INTO Restaurant_Location (Restaurant_ID, Location) VALUES
-(1, 'Downtown Mall'),
-(1, 'North Suburb'),
-(2, 'East Waterfront'),
-(3, 'City Center');
+(1, '2391 Prince Muhammad Ibn Abd Al Aziz Rd, Al Olaya Dist.'),
+(1, '3110 Prince Turki Ibn Abdulaziz Al Awwal Rd, Hittin Dist.'),
+(2, '8459 Corniche Rd, Al Shati Dist.'),
+(3, '2884 King Salman Bin Abdulaziz Rd, Al Hizam Al Dhahabi Dist.');
 
 INSERT INTO Menu (Restaurant_ID, Name, Description, Price) VALUES
-(1, 'Supernova Burger', 'Double patty with secret sauce', 12.99),
-(1, 'Cosmic Fries', 'Seasoned with stardust salt', 3.50),
-(2, 'Dragon Roll', 'Eel and avocado with spicy mayo', 15.00),
-(3, 'Fettuccine Alfredo', 'Creamy white sauce with parsley', 14.50);
+(1, '4-Piece Chicken Meal', 'The ultimate signature dish. It features four pieces of perfectly broasted, bone-in chicken (breast and wing or thigh and drumstick) injected with Al Baiks legendary secret spice blend. It comes served with a side of French fries, a bun, and their iconic, deeply addictive garlic sauce.', 16.99),
+(1, 'Big Baik Sandwich', 'A massive, satisfying chicken sandwich featuring a large, juicy fillet of chicken breast cooked to a golden crisp. It is layered with pickles and Al Baik’s special proprietary sauce, all tucked into a long, soft seed bun.', 17.50),
+(2, 'Bad Boy Roll', 'A premium house-special maki roll that packs a punch of premium proteins. It combines fresh tuna, ebi (shrimp) tempura, and rich salmon with avocado, wrapped beautifully and drizzled with Sushi Dens signature house special savory sauce.', 15.00),
+(3, 'Iced White Chocolate Mocha', 'A smooth and sweet espresso-based favorite. It blends Starbucks’ signature rich espresso with white chocolate mocha sauce, milk, and ice. The beverage is completed with a generous topping of sweetened whipped cream for a creamy, dessert-like finish.', 14.50);
 
 INSERT INTO Driver (Name, Phone, Vehicle_Type, Availability) VALUES
-('Speedy Sam', '555-9999', 'Bicycle', TRUE),
-('Van Vanessa', '555-8888', 'Car', TRUE),
-('Moto Mike', '555-7777', 'Motorcycle', FALSE);
+('Anwar', '555-9999', 'Bicycle', TRUE),
+('Wajid', '555-8888', 'Plane', TRUE),
+('Abdullah', '555-7777', 'Helicopter', FALSE);
 
 INSERT INTO `Order` (User_ID, Driver_ID, Total, Status) VALUES
 (1, 1, 16.49, 'Delivered'),
 (2, 2, 15.00, 'On the way');
 
 INSERT INTO Order_Menu (Order_ID, Item_ID) VALUES
-(1, 1), -- Supernova Burger
-(1, 2), -- Cosmic Fries
-(2, 3); -- Dragon Roll
+(1, 1),
+(1, 2),
+(2, 3);
 
 INSERT INTO Payment (Order_ID, Method, Amount) VALUES
 (1, 'Credit Card', 16.49),
 (2, 'Digital Wallet', 15.00);
 
 INSERT INTO Review (User_ID, Restaurant_ID, Rating, Comment) VALUES
-(1, 1, 5, 'Best burger in the galaxy!'),
+(1, 1, 5, 'Best burgers in the KSA!'),
 (2, 2, 4, 'Very fresh, but delivery took a while.');
 
 -- Final Success Message
