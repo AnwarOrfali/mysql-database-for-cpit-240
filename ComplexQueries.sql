@@ -14,7 +14,7 @@ SELECT
     SUM(P.Amount) AS Total_Revenue, 
     AVG(P.Amount) AS Avg_Payment
 FROM `Order` AS O
-JOIN Payment AS P ON O.Order_ID = P.Order_ID
+JOIN Payment AS P ON O.Order_ID = P.Order_ID;
 
 -- Complex Query with JOIN Statements
 -- Retrieve a comprehensive log of all customers, their addresses, and details of their orders.
